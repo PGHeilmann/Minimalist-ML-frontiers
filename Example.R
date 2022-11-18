@@ -1,7 +1,7 @@
 ### Heilmann et al. 2022
 # Example procedure to conduct a Gradient Boosting Machines grid search
 # and form Stacked Ensembles on the basis of the results using h2o
-# and a corn Dataset from Technow et al. 2014
+# and a corn dataset from Technow et al. 2014
 ###
 
 # Load required packages
@@ -10,13 +10,6 @@ library(h2o)
 
 # Start the h2o cluster
 h2o.init()
-
-# Function to restart after each iteration to prevent memory cluttering
-restart <- function(nodes = 4){
-  h2o.shutdown(F)
-  h2o.init(nthreads = nodes)
-  Sys.sleep(1)  # Sometimes needs some time to start up
-}
 
 # Load the dataset
 data("DT_technow")
@@ -51,6 +44,8 @@ idx.list <- list()
 set.seed(seed.vec)
 
 # Each iteration creates a random split, stores it in a list
+# Using the seed above and this loop, partitions identical
+# to the ones used in the paper may be created
 for (x in 1:100) {                                            
   idx.list[[x]] <- sample(x    = 1:nrow(DT_technow),
                           size = round(nrow(DT_technow)*0.9))  
@@ -64,6 +59,11 @@ for (x in 1:100) {
 # but results are closer to each other
 set.seed(123123)
 lseed <- sample(1:10000, 100)
+
+# Create vectors to store prediction accuracy of each iteration
+ens_cors <- c(); gbm_cors <- c()
+# List to save summary details of each grid
+grid_list <- list()
 
 for (i in 1:100) {
   # Get the indicies for the training set in this iteration
