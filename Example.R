@@ -60,10 +60,9 @@ for (x in 1:100) {
 set.seed(123123)
 lseed <- sample(1:10000, 100)
 
-# Create vectors to store prediction accuracy of each iteration
-ens_cors <- c(); gbm_cors <- c()
-# List to save summary details of each grid
-grid_list <- list()
+gbm_cors  <- c()     # To store gbm prediction accuracy
+ens_cors  <- c()     # To store ensemble prediction accuracy
+grid_list <- list()  # To store grid details
 
 for (i in 1:100) {
   # Get the indicies for the training set in this iteration
@@ -77,6 +76,8 @@ for (i in 1:100) {
   
   # Check if any parental line are contained in the test set but not the
   # training set. If such is the case, remove them from the training set
+  # Both parental lines need to be available in the training set for GCA
+  # to work
   if (!all(Test$dent %in% Train$dent)) {
     Test <- Test[Test$dent %in% Train$dent, ]
   }
@@ -88,23 +89,25 @@ for (i in 1:100) {
   Train.h2o <- as.h2o(Train[c("GY", "flint", "dent")])
   Test.h2o  <- as.h2o( Test[c("GY", "flint", "dent")])
   
-  # We need to set the nbins_cats hyperparameter space according
+  # We set the nbins_cats hyperparameter space according
   # to the number of factor levels, i.e. parental lines, in our 
-  # training set
+  # training set. Depending on the train/test split, this may change
   n_cat <- length(levels(Train$flint)) + length(levels(Train$dent))
   
   # Modify the hyperparameter search space
   # We use 100%, 50%, 25% or 5% of factor levels
   params$nbins_cats <- round(c(n_cat, n_cat * .5, n_cat * .25, n_cat * .05))
   
+  # Run the grid search
+  # Depending on the computational capacity and threads used, this may take a while
+  # Using the standard metric 'mean residual deviance' is identical to MSE for this task
   gbm_grid <-
     h2o.grid( algorithm       =  "gbm",                            # Choose algorithm for grid search
               y               = "GY",                              # Target variable
               x               = c("flint", "dent"),                # Predictor variables
               training_frame  = Train.h2o,                         # Data, must be in h2o format
               grid_id         = paste("gbm_grid", i, sep = "_"),   # Name of the grid
-              nfolds          = 10,                                # 10-fold cross validaton (CV) 
-              stopping_metric = "mse",                             # use MSE as the relevant metric
+              nfolds          = 10,                                # 10-fold CV
               seed            = lseed[i],                          # seed for random component of algorithm
               hyper_params    = params,                            # use the predefined hyperparameters
               search_criteria = search_criteria,                   # use the predefined search criteria
