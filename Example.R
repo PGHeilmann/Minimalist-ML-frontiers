@@ -1,4 +1,4 @@
-### Heilmann et al. 2022
+### Heilmann et al. 2023
 # Example procedure to conduct a Gradient Boosting Machines grid search
 # and form Stacked Ensembles on the basis of the results using h2o
 # and a corn dataset from Technow et al. 2014
