@@ -1,4 +1,7 @@
-# Minimalist-ML-frontiers
+# Stacked ensembles on basis of parentage
+information can predict hybrid performance
+with an accuracy comparable to marker-based
+GBLUP
 
 ## File S3: Code example
 
@@ -84,7 +87,7 @@ for (i in 1:100) {
   Test  <- DT_technow[-idx, ]
   
   # Check if any parental line are contained in the test set but not the
-  # training set. If such is the case, remove them from the training set
+  # training set. If such is the case, remove them from the test set
   # Both parental lines need to be available in the training set for GCA
   # to work
   
