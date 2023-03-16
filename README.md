@@ -1,7 +1,4 @@
-# Stacked ensembles on basis of parentage
-information can predict hybrid performance
-with an accuracy comparable to marker-based
-GBLUP
+# Stacked ensembles on basis of parentage information can predict hybrid performance with an accuracy comparable to marker-based GBLUP
 
 ## File S3: Code example
 
