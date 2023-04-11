@@ -15,13 +15,6 @@ library(h2o)
 # Start the h2o cluster
 h2o.init()
 
-# Function to restart after each iteration to prevent memory cluttering
-restart <- function(nodes = 4){
-  h2o.shutdown(F)
-  h2o.init(nthreads = nodes)
-  Sys.sleep(1)  # Sometimes needs some time to start up
-}
-
 # Load the dataset
 data("DT_technow")
 
